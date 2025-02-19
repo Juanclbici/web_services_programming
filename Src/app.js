@@ -2,6 +2,8 @@
 const express = require('express'); 
 //Importar Awilix
 const container = require('./container'); 
+//Importar
+const User = require('./models/User');
 
 // Se crea una instancia de la aplicación Express.
 const app = express(); 
@@ -29,6 +31,23 @@ app.get('/user/:id', (req, res) => {
     const userService = req.container.resolve('userService');
     const user = userService.getUser(req.params.id);
     res.json(user);
+});
+
+// Ruta para obtener todos los usuarios
+app.get('/users', async (req, res) => {
+    const users = await User.findAll();
+    res.json(users);
+});
+
+// Ruta para crear un usuario
+app.post('/users', async (req, res) => {
+    const { name, email } = req.body;
+    try {
+        const newUser = await User.create({ name, email });
+        res.json(newUser);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
 });
 
 //Get para sumar dos números
